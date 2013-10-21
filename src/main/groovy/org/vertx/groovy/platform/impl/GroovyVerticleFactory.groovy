@@ -47,13 +47,15 @@ public class GroovyVerticleFactory implements VerticleFactory {
     this.vertx = vertx
     this.container = container
 
-    CompilerConfiguration configuration = new CompilerConfiguration()
+    // enable InvokeDynamic mode
     if (Boolean.getBoolean('vertx.lang.groovy.indy')) {
-      // enable InvokeDynamic mode
-      configuration.getOptimizationOptions().put("int", false);
-      configuration.getOptimizationOptions().put("indy", true);
+      CompilerConfiguration configuration = new CompilerConfiguration()
+      configuration.getOptimizationOptions().put('int', false);
+      configuration.getOptimizationOptions().put('indy', true);
+      this.gcl = new GroovyClassLoader(cl, configuration)
+    } else {
+      this.gcl = new GroovyClassLoader(cl)
     }
-    this.gcl = new GroovyClassLoader(cl)
   }
 
   public JVerticle createVerticle(String main) throws Exception {
