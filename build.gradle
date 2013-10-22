@@ -34,6 +34,13 @@ configurations {
   testCompile.extendsFrom provided
 }
 
+if (groovyVersion.endsWith(':indy')) {
+  tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.int = false
+    groovyOptions.optimizationOptions.indy = true
+  }
+}
+
 repositories {
   if (System.getenv("VERTX_DISABLE_MAVENLOCAL") == null) {
     // We don't want to use mavenLocal when running on CI - mavenLocal is only useful in Gradle for
@@ -138,7 +145,9 @@ test {
 
   // Some vert.x properties
   systemProperty 'vertx.test.timeout', 15
-  systemProperty 'vertx.lang.groovy.indy', true
+  if (groovyVersion.endsWith(':indy')) {
+    systemProperty 'vertx.lang.groovy.indy', true
+  }
   systemProperty 'vertx.mods', "$projectDir/src/test/mod-test"  // Set vertx.mods to the mod directory
   systemProperty 'vertx.version', "$project.version"
 
