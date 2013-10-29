@@ -94,6 +94,15 @@ class DefaultHttpClient implements HttpClient {
     jClient.getHost()
   }
 
+  HttpClient setTryUseCompression(boolean tryUseCompression) {
+    jClient.setTryUseCompression(tryUseCompression)
+    this
+  }
+
+  boolean getTryUseCompression() {
+    return jClient.getTryUseCompression()
+  }
+
   @Override
   HttpClient connectWebsocket(String uri, Closure wsConnect) {
     jClient.connectWebsocket(uri, {wsConnect(new DefaultWebSocket((JWebSocket) it))} as Handler)
