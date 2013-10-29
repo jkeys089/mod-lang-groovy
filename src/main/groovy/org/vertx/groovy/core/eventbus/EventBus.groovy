@@ -16,6 +16,8 @@
 
 package org.vertx.groovy.core.eventbus
 
+import org.vertx.groovy.core.AsyncResult
+import org.vertx.java.core.AsyncResult as JAsyncResult
 import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.impl.ClosureUtil
 import org.vertx.java.core.Handler
@@ -63,7 +65,7 @@ import java.util.concurrent.ConcurrentHashMap
 class EventBus {
 
   private final JEventBus jEventBus
-  
+
   public EventBus(JEventBus jEventBus) {
     this.jEventBus = jEventBus
   }
@@ -85,6 +87,26 @@ class EventBus {
     } else {
       // Just choose an overloaded method...
       jEventBus.send(address, (String)null, wrapHandler(replyHandler))
+    }
+    this
+  }
+
+  /**
+   * Send a message on the event bus.
+   * Message can be a java.util.Map (Representing a JSON message), a String, boolean,
+   * byte, short, int, long, float, double or {@link org.vertx.java.core.buffer.Buffer}
+   * @param address The address to send it to
+   * @param message The message
+   * @param timeout The response timeout in ms
+   * @param replyHandler Reply handler will be called when any reply from the recipient is received
+   * @return self which allow method chaining
+   */
+  EventBus sendWithTimeout(String address, message, long timeout, Closure replyHandler = null) {
+    if (message != null) {
+      jEventBus.sendWithTimeout(address, convertMessage(message), timeout, wrapAsyncHandler(replyHandler))
+    } else {
+      // Just choose an overloaded method...
+      jEventBus.sendWithTimeout(address, (String)null, timeout, wrapAsyncHandler(replyHandler))
     }
     this
   }
@@ -154,6 +176,25 @@ class EventBus {
     this
   }
 
+  /**
+   * Sets a default timeout, in ms, for replies. If a messages is sent specify a reply handler
+   * but without specifying a timeout, then the reply handler is timed out, i.e. it is automatically unregistered
+   * if a message hasn't been received before timeout.
+   * The default value for default send timeout is -1, which means "never timeout".
+   * @param timeoutMs
+   */
+  EventBus setDefaultReplyTimeout (long timeoutMs) {
+    jEventBus.setDefaultReplyTimeout(timeoutMs)
+    this
+  }
+
+  /**
+   * Return the value for default send timeout
+   */
+  long getDefaultReplyTimeout() {
+    return jEventBus.getDefaultReplyTimeout()
+  }
+
   JEventBus javaEventBus() {
     jEventBus
   }
@@ -170,6 +211,23 @@ class EventBus {
   protected static Handler wrapHandler(Closure handler) {
     if (handler != null) {
       return { handler(new Message((JMessage) it)) } as Handler
+    } else {
+      return null
+    }
+  }
+
+  protected static Handler wrapAsyncHandler(Closure handler) {
+    if (handler != null) {
+      return { JAsyncResult<JMessage> jresult ->
+        JMessage jmsg = jresult?.result()
+        Message msg = jmsg ? new Message(jmsg) : null
+        AsyncResult<Message> ar = new AsyncResult(jresult) {
+          Message getResult () {
+            return msg
+          }
+        }
+        handler(ar)
+      } as Handler
     } else {
       return null
     }
