@@ -47,16 +47,23 @@ class Message {
     this.jMessage = jMessage
   }
 
-  /**
- * Reply to this message. If the message was sent specifying a reply handler, that handler will be
- * called when it has received a reply. If the message wasn't sent specifying a receipt handler
- * this method does nothing.
- * @param message The reply message
- * @param replyHandler Optional reply handler, so you can get a reply to your reply
- */
+ /**
+  * Reply to this message. If the message was sent specifying a reply handler, that handler will be
+  * called when it has received a reply. If the message wasn't sent specifying a receipt handler
+  * this method does nothing.
+  * @param message The reply message
+  * @param replyHandler Optional reply handler, so you can get a reply to your reply
+  */
   void reply(message, Closure replyHandler = null) {
     message = EventBus.convertMessage(message)
     jMessage.reply(message, EventBus.wrapHandler(replyHandler))
+  }
+
+  /**
+   * The reply address (if any)
+   */
+  String replyAddress() {
+    return jMessage.replyAddress()
   }
 
   /**
