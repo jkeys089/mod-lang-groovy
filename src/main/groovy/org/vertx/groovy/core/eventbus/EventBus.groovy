@@ -200,8 +200,8 @@ class EventBus {
   }
 
   protected static convertMessage(message) {
-    if (message instanceof Map) {
-      message = new JsonObject(message)
+    if (message instanceof Map<String,Object>) {
+      message = new JsonObject((Map<String,Object>)message)
     } else if (message instanceof Buffer) {
       message = ((Buffer)message).toJavaBuffer()
     }
@@ -218,16 +218,18 @@ class EventBus {
 
   protected static Handler wrapAsyncHandler(Closure handler) {
     if (handler != null) {
-      return { JAsyncResult<JMessage> jresult ->
-        JMessage jmsg = jresult?.result()
-        Message msg = jmsg ? new Message(jmsg) : null
-        AsyncResult<Message> ar = new AsyncResult(jresult) {
-          Message getResult () {
-            return msg
+      return new Handler<JAsyncResult<JMessage>>() {
+        void handle (JAsyncResult<JMessage> jresult) {
+          JMessage jmsg = jresult?.result()
+          Message msg = jmsg ? new Message(jmsg) : null
+          AsyncResult<Message> ar = new AsyncResult(jresult) {
+            Message getResult () {
+              return msg
+            }
           }
+          handler(ar)
         }
-        handler(ar)
-      } as Handler
+      }
     } else {
       return null
     }
