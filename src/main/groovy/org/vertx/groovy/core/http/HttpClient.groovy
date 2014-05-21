@@ -206,12 +206,12 @@ interface HttpClient extends ClientSSLSupport<HttpClient>, TCPSupport<HttpClient
    * @return true if this client will validate the remote server's certificate hostname against the requested host
    */
   boolean isVerifyHost()
-  
+
   /**
    * Set if the {@link HttpClient} should try to use compression.
    */
    HttpClient setTryUseCompression(boolean tryUseCompression)
-    
+
   /**
    * Returns {@code true} if the {@link HttpClient} should try to use compression.
    */
@@ -222,7 +222,7 @@ interface HttpClient extends ClientSSLSupport<HttpClient>, TCPSupport<HttpClient
    * @param maxSize The size in bytes
    */
   HttpClient setMaxWebSocketFrameSize(int maxSize)
- 
+
   /**
    * Get the  maximum websocket frame size in bytes.
    */

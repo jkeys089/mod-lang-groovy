@@ -35,7 +35,7 @@ class DefaultHttpServer implements HttpServer {
   // Putting it as a final public groovy property to be able to use `HttpServer.jServer` notation
   final JHttpServer jServer
 
-  DefaultHttpServer(Vertx vertx, Map props = null) {
+  DefaultHttpServer(Vertx vertx, Map<String,Object> props = null) {
     jServer = vertx.createHttpServer()
     if (props != null) {
       props.each { String k, v ->
@@ -94,7 +94,7 @@ class DefaultHttpServer implements HttpServer {
     jServer.setMaxWebSocketFrameSize( maxSize )
     this
   }
- 
+
   @Override
   int getMaxWebSocketFrameSize() {
     jServer.getMaxWebSocketFrameSize()
@@ -229,13 +229,13 @@ class DefaultHttpServer implements HttpServer {
     jServer.setUsePooledBuffers(pooledBuffers)
     this
   }
-  
+
   @Override
   HttpServer setCompressionSupported(boolean compressionSupported) {
     jServer.setCompressionSupported(compressionSupported)
     this
   }
-  
+
 
   @Override
   boolean isTCPNoDelay() {
@@ -285,9 +285,9 @@ class DefaultHttpServer implements HttpServer {
   /**
    * Get the Java instance
    *
-   * @deprecated use  `HttpServer.jServer` notation instead.  
+   * @deprecated use  `HttpServer.jServer` notation instead.
    */
-  @Deprecated 
+  @Deprecated
   JHttpServer toJavaServer() {
     jServer
   }

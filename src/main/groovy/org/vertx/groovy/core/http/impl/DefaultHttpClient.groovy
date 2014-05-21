@@ -36,7 +36,7 @@ class DefaultHttpClient implements HttpClient {
 
   private JClient jClient
 
-  DefaultHttpClient(Vertx vertx, Map props = null) {
+  DefaultHttpClient(Vertx vertx, Map<String,Object> props = null) {
     jClient = vertx.createHttpClient()
     if (props != null) {
       props.each { String k, v ->
@@ -190,7 +190,7 @@ class DefaultHttpClient implements HttpClient {
     jClient.setMaxWebSocketFrameSize( maxSize )
     this
   }
- 
+
   @Override
   int getMaxWebSocketFrameSize() {
     jClient.getMaxWebSocketFrameSize()
@@ -309,7 +309,7 @@ class DefaultHttpClient implements HttpClient {
     jClient.setUsePooledBuffers(pooledBuffers)
     this
   }
-  
+
   @Override
   HttpClient setTryUseCompression(boolean tryUseCompression) {
     jClient.setTryUseCompression(tryUseCompression)
@@ -355,10 +355,10 @@ class DefaultHttpClient implements HttpClient {
   boolean isUsePooledBuffers() {
     jClient.isUsePooledBuffers()
   }
-   
+
   @Override
   boolean getTryUseCompression() {
     jClient.getTryUseCompression()
   }
-  
+
 }
