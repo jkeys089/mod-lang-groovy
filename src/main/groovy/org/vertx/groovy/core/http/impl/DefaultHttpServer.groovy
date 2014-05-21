@@ -17,7 +17,6 @@
 package org.vertx.groovy.core.http.impl
 
 import groovy.transform.CompileStatic
-import static groovy.transform.TypeCheckingMode.SKIP
 
 import org.vertx.groovy.core.http.HttpServer
 import org.vertx.groovy.core.impl.ClosureUtil
@@ -237,16 +236,11 @@ class DefaultHttpServer implements HttpServer {
     this
   }
 
-<<<<<<< HEAD
   @Override
-  @CompileStatic(SKIP)
   HttpServer setProxyProtocol(boolean useProxyProtocol) {
     jServer.setProxyProtocol(useProxyProtocol)
     this
   }
-
-=======
->>>>>>> master
 
   @Override
   boolean isTCPNoDelay() {
@@ -294,7 +288,6 @@ class DefaultHttpServer implements HttpServer {
   }
 
   @Override
-  @CompileStatic(SKIP)
   boolean isProxyProtocol() {
     jServer.isProxyProtocol()
   }
