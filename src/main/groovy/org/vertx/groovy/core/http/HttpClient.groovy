@@ -100,16 +100,6 @@ interface HttpClient extends ClientSSLSupport<HttpClient>, TCPSupport<HttpClient
   String getHost()
 
   /**
-  * Set if the {@link HttpClient} should try to use compression.
-  */
-  HttpClient setTryUseCompression(boolean tryUseCompression);
-
-  /**
-  * Returns {@code true} if the {@link HttpClient} should try to use compression.
-  */
-  boolean getTryUseCompression();
-
-  /**
    * Attempt to connect an HTML5 websocket to the specified URI<p>
    * The connect is done asynchronously and {@code wsConnect} is called back with the websocket
    */
