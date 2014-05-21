@@ -17,6 +17,7 @@
 package org.vertx.groovy.core.http.impl
 
 import groovy.transform.CompileStatic
+import static groovy.transform.TypeCheckingMode.SKIP
 
 import org.vertx.groovy.core.http.HttpServer
 import org.vertx.groovy.core.impl.ClosureUtil
@@ -218,13 +219,20 @@ class DefaultHttpServer implements HttpServer {
     jServer.setUsePooledBuffers(pooledBuffers)
     this
   }
-  
+
   @Override
   HttpServer setCompressionSupported(boolean compressionSupported) {
     jServer.setCompressionSupported(compressionSupported)
     this
   }
-  
+
+  @Override
+  @CompileStatic(SKIP)
+  HttpServer setProxyProtocol(boolean useProxyProtocol) {
+    jServer.setProxyProtocol(useProxyProtocol)
+    this
+  }
+
 
   @Override
   boolean isTCPNoDelay() {
@@ -271,12 +279,18 @@ class DefaultHttpServer implements HttpServer {
     jServer.isCompressionSupported()
   }
 
+  @Override
+  @CompileStatic(SKIP)
+  boolean isProxyProtocol() {
+    jServer.isProxyProtocol()
+  }
+
   /**
    * Get the Java instance
    *
-   * @deprecated use  `HttpServer.jServer` notation instead.  
+   * @deprecated use  `HttpServer.jServer` notation instead.
    */
-  @Deprecated 
+  @Deprecated
   JHttpServer toJavaServer() {
     jServer
   }

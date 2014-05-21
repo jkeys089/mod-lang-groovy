@@ -89,7 +89,7 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
    * is complete.
    */
   void close(Closure doneHandler)
-  
+
   /**
    * Set if the {@link HttpServer} should compress the http response if the connected client supports it.
    */
@@ -99,6 +99,16 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
    * Returns {@code true} if the {@link HttpServer} should compress the http response if the connected client supports it.
    */
   boolean isCompressionSupported()
+
+  /**
+   * Set if the {@link HttpServer} should expect a proxy protocol header from an upstream server.
+   */
+  HttpServer setProxyProtocol(boolean useProxyProtocol);
+
+  /**
+   * Returns {@code true} if the {@link HttpServer} should expect a proxy protocol header from an upstream server.
+   */
+  boolean isProxyProtocol();
 
   /**
    * Get the underlying Java server
