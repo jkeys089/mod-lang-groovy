@@ -100,7 +100,15 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
    */
   boolean isCompressionSupported()
 
+
   /**
+   * Sets the maximum websocket frame size in bytes. Default is 65536 bytes.
+   * @param maxSize The size in bytes
+   */
+  HttpServer setMaxWebSocketFrameSize(int maxSize)
+
+  /**
+<<<<<<< HEAD
    * Set if the {@link HttpServer} should expect a proxy protocol header from an upstream server.
    */
   HttpServer setProxyProtocol(boolean useProxyProtocol);
@@ -111,6 +119,13 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
   boolean isProxyProtocol();
 
   /**
+=======
+   * Get the  maximum websocket frame size in bytes.
+   */
+  int getMaxWebSocketFrameSize()
+
+   /**
+>>>>>>> master
    * Get the underlying Java server
    */
   org.vertx.java.core.http.HttpServer toJavaServer();

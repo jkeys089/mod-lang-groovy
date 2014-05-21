@@ -15,11 +15,12 @@
  */
 
 apply from: "gradle/setup.gradle"
-apply from: "gradle/maven.gradle"
 
 apply plugin: 'groovy'
 apply plugin: 'java'
 apply plugin: 'idea'
+
+apply from: "gradle/maven.gradle"
 
 group = modowner
 archivesBaseName = modname
@@ -32,6 +33,13 @@ targetCompatibility = '1.7'
 configurations {
   provided
   testCompile.extendsFrom provided
+}
+
+if (groovyVersion.endsWith(':indy')) {
+  tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.int = false
+    groovyOptions.optimizationOptions.indy = true
+  }
 }
 
 repositories {
@@ -138,6 +146,9 @@ test {
 
   // Some vert.x properties
   systemProperty 'vertx.test.timeout', 15
+  if (groovyVersion.endsWith(':indy')) {
+    systemProperty 'vertx.lang.groovy.indy', true
+  }
   systemProperty 'vertx.mods', "$projectDir/src/test/mod-test"  // Set vertx.mods to the mod directory
   systemProperty 'vertx.version', "$project.version"
 

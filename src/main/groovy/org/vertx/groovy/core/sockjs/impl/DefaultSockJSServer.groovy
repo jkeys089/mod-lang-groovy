@@ -49,7 +49,7 @@ class DefaultSockJSServer implements SockJSServer {
   }
 
   SockJSServer bridge(Map sjsConfig) {
-    jServer.bridge(new JsonObject(sjsConfig), new JsonArray([[:]]), new JsonArray([[:]]),
+    jServer.bridge(new JsonObject(sjsConfig), new JsonArray((List<Object>)[[:]]), new JsonArray((List<Object>)[[:]]),
         5 * 60 * 1000, null)
     this
   }
@@ -69,12 +69,12 @@ class DefaultSockJSServer implements SockJSServer {
     this
   }
 
-  SockJSServer bridge(Map sjsConfig, List<Map<String, Object>> inboundPermitted, 
+  SockJSServer bridge(Map sjsConfig, List<Map<String, Object>> inboundPermitted,
                       List<Map<String, Object>> outboundPermitted, Map bridgeConfig) {
-    jServer.bridge(new JsonObject(sjsConfig), new JsonArray((List<Object>)inboundPermitted), 
+    jServer.bridge(new JsonObject(sjsConfig), new JsonArray((List<Object>)inboundPermitted),
                     new JsonArray((List<Object>)outboundPermitted),
                     new JsonObject(bridgeConfig))
-    this  
+    this
   }
 
   SockJSServer setHook(EventBusBridgeHook hook) {

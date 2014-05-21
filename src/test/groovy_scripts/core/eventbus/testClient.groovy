@@ -28,14 +28,21 @@ tu.checkThread()
 eb = vertx.eventBus
 address = 'foo-address'
 
+tim = "tim"
+
 sent = [
   price : 23.45,
-  name : 'tim'
+  name : "${tim}"
 ]
 
 emptySent = [
   address : address
 ]
+
+sentList = ['a', 'b', 'c', "${tim}"]
+
+gstring = 'GString'
+sentGString = "I'm a ${gstring}"
 
 reply = [
   desc: "approved",
@@ -50,6 +57,14 @@ def assertSent(msg) {
   tu.azzert(sent['name'] == msg['name'])
 }
 
+def assertSentList(msg) {
+    sentList.eachWithIndex { def entry, int i ->
+        tu.azzert(entry == msg[i])
+    }
+}
+def assertSentGString(msg) {
+    tu.azzert(sentGString.toString() == msg)
+}
 
 def assertReply(rep) {
   tu.azzert(reply['desc'] == rep['desc'])
@@ -71,6 +86,39 @@ def testSimple() {
   tu.azzert(ebus == eb)
 
   tu.azzert(eb.send(address, sent) == eb)
+}
+
+def testSendList() {
+
+    def handled = false
+    def ebus = eb.registerHandler(address, myHandler = { msg ->
+        tu.checkThread()
+        tu.azzert(msg.address == address)
+        tu.azzert(!handled)
+        assertSentList(msg.body())
+        tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
+        handled = true
+        tu.testComplete()
+    })
+    tu.azzert(ebus == eb)
+
+    tu.azzert(eb.send(address, sentList) == eb)
+}
+def  testSendGString() {
+
+    def handled = false
+    def ebus = eb.registerHandler(address, myHandler = { msg ->
+        tu.checkThread()
+        tu.azzert(msg.address == address)
+        tu.azzert(!handled)
+        assertSentGString(msg.body())
+        tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
+        handled = true
+        tu.testComplete()
+    })
+    tu.azzert(ebus == eb)
+
+    tu.azzert(eb.send(address, sentGString) == eb)
 }
 
 def testSimpleWithTimeout() {

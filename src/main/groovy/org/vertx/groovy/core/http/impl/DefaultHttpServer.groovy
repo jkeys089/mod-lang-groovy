@@ -36,7 +36,7 @@ class DefaultHttpServer implements HttpServer {
   // Putting it as a final public groovy property to be able to use `HttpServer.jServer` notation
   final JHttpServer jServer
 
-  DefaultHttpServer(Vertx vertx, Map props = null) {
+  DefaultHttpServer(Vertx vertx, Map<String,Object> props = null) {
     jServer = vertx.createHttpServer()
     if (props != null) {
       props.each { String k, v ->
@@ -88,6 +88,17 @@ class DefaultHttpServer implements HttpServer {
   @Override
   void close() {
     jServer.close()
+  }
+
+  @Override
+  HttpServer setMaxWebSocketFrameSize(int maxSize) {
+    jServer.setMaxWebSocketFrameSize( maxSize )
+    this
+  }
+
+  @Override
+  int getMaxWebSocketFrameSize() {
+    jServer.getMaxWebSocketFrameSize()
   }
 
   @Override
@@ -226,6 +237,7 @@ class DefaultHttpServer implements HttpServer {
     this
   }
 
+<<<<<<< HEAD
   @Override
   @CompileStatic(SKIP)
   HttpServer setProxyProtocol(boolean useProxyProtocol) {
@@ -233,6 +245,8 @@ class DefaultHttpServer implements HttpServer {
     this
   }
 
+=======
+>>>>>>> master
 
   @Override
   boolean isTCPNoDelay() {
