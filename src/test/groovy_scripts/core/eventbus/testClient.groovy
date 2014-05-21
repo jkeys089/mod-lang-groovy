@@ -17,6 +17,8 @@
 package core.eventbus
 
 import org.vertx.groovy.testframework.TestUtils
+import org.vertx.java.core.eventbus.ReplyException
+import org.vertx.java.core.eventbus.ReplyFailure
 
 tu = new TestUtils(vertx)
 tu.checkThread()
@@ -26,25 +28,43 @@ tu.checkThread()
 eb = vertx.eventBus
 address = 'foo-address'
 
+tim = "tim"
+
 sent = [
   price : 23.45,
-  name : 'tim'
+  name : "${tim}"
 ]
 
 emptySent = [
   address : address
 ]
 
+sentList = ['a', 'b', 'c', "${tim}"]
+
+gstring = 'GString'
+sentGString = "I'm a ${gstring}"
+
 reply = [
   desc: "approved",
   status: 123
 ]
+
+shortTimeout = 1L
+longTimeout = 5000L
 
 def assertSent(msg) {
   tu.azzert(sent['price'] == msg['price'])
   tu.azzert(sent['name'] == msg['name'])
 }
 
+def assertSentList(msg) {
+    sentList.eachWithIndex { def entry, int i ->
+        tu.azzert(entry == msg[i])
+    }
+}
+def assertSentGString(msg) {
+    tu.azzert(sentGString.toString() == msg)
+}
 
 def assertReply(rep) {
   tu.azzert(reply['desc'] == rep['desc'])
@@ -56,6 +76,7 @@ def testSimple() {
   def handled = false
   def ebus = eb.registerHandler(address, myHandler = { msg ->
     tu.checkThread()
+    tu.azzert(msg.address == address)
     tu.azzert(!handled)
     assertSent(msg.body())
     tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
@@ -67,11 +88,130 @@ def testSimple() {
   tu.azzert(eb.send(address, sent) == eb)
 }
 
+def testSendList() {
+
+    def handled = false
+    def ebus = eb.registerHandler(address, myHandler = { msg ->
+        tu.checkThread()
+        tu.azzert(msg.address == address)
+        tu.azzert(!handled)
+        assertSentList(msg.body())
+        tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
+        handled = true
+        tu.testComplete()
+    })
+    tu.azzert(ebus == eb)
+
+    tu.azzert(eb.send(address, sentList) == eb)
+}
+def  testSendGString() {
+
+    def handled = false
+    def ebus = eb.registerHandler(address, myHandler = { msg ->
+        tu.checkThread()
+        tu.azzert(msg.address == address)
+        tu.azzert(!handled)
+        assertSentGString(msg.body())
+        tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
+        handled = true
+        tu.testComplete()
+    })
+    tu.azzert(ebus == eb)
+
+    tu.azzert(eb.send(address, sentGString) == eb)
+}
+
+def testSimpleWithTimeout() {
+
+  def handled = false
+  def ebus = eb.registerHandler(address, myHandler = { msg ->
+    tu.checkThread()
+    tu.azzert(msg.address == address)
+    tu.azzert(!handled)
+    assertSent(msg.body())
+    tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
+    handled = true
+    tu.testComplete()
+  })
+  tu.azzert(ebus == eb)
+
+  tu.azzert(eb.sendWithTimeout(address, sent, longTimeout) == eb)
+}
+
+def testMissingHandler() {
+  eb.sendWithTimeout('bogus-address', sent, longTimeout) { asyncResult ->
+    tu.azzert(!asyncResult.succeeded)
+    tu.azzert(asyncResult.cause instanceof ReplyException)
+    tu.azzert(asyncResult.cause.failureType() == ReplyFailure.NO_HANDLERS)
+    tu.testComplete()
+  }
+}
+
+def testDoesTimeout() {
+  eb.registerHandler(address, myHandler = { msg ->
+    tu.checkThread()
+    eb.unregisterHandler(address, myHandler)
+  })
+
+  eb.sendWithTimeout(address, sent, longTimeout) { asyncResult ->
+    tu.azzert(!asyncResult.succeeded)
+    tu.azzert(asyncResult.cause instanceof ReplyException)
+    tu.azzert(asyncResult.cause.failureType() == ReplyFailure.TIMEOUT)
+    tu.testComplete()
+  }
+}
+
+def testDoesNotTimeout() {
+  eb.registerHandler(address, myHandler = { msg ->
+    tu.checkThread()
+    msg.reply('ok')
+    eb.unregisterHandler(address, myHandler)
+  })
+
+  eb.sendWithTimeout(address, sent, longTimeout) { asyncResult ->
+    tu.azzert(asyncResult.succeeded)
+    tu.azzert(asyncResult.result.body() == 'ok')
+    tu.testComplete()
+  }
+}
+
+def testHasReplyAddress() {
+  eb.registerHandler(address, myHandler = { msg ->
+    tu.checkThread()
+    tu.azzert(msg.replyAddress() != null)
+    msg.reply('ok')
+    eb.unregisterHandler(address, myHandler)
+  })
+
+  eb.sendWithTimeout(address, sent, longTimeout) { asyncResult ->
+    tu.testComplete()
+  }
+}
+
+def testNoReplyAddress() {
+  eb.registerHandler(address, myHandler = { msg ->
+    tu.checkThread()
+    tu.azzert(msg.replyAddress() == null)
+    eb.unregisterHandler(address, myHandler)
+    tu.testComplete()
+  })
+
+  eb.send(address, sent)
+}
+
+def testSetDefaultBusTimeout() {
+  long defaultTimeout = 10000l
+  eb.setDefaultReplyTimeout(defaultTimeout)
+  tu.azzert(eb.getDefaultReplyTimeout() == defaultTimeout)
+  tu.testComplete()
+}
+
 def testEmptyMessage() {
 
   def handled = false
   def ebus = eb.registerHandler(address, myHandler = { msg ->
     tu.checkThread()
+    tu.azzert(msg.address == address)
     tu.azzert(!handled)
     tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
     handled = true
@@ -88,6 +228,7 @@ def testUnregister() {
   def handled = false
   def ebus = eb.registerHandler(address, myHandler = { msg ->
     tu.checkThread()
+    tu.azzert(msg.address == address)
     tu.azzert(!handled)
     assertSent(msg.body())
     tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
@@ -110,6 +251,7 @@ def testWithReply() {
   def handled = false
   def ebus = eb.registerHandler(address, myHandler = { msg ->
     tu.checkThread()
+    tu.azzert(msg.address == address)
     tu.azzert(!handled)
     assertSent(msg.body())
     eb.unregisterHandler(address, myHandler)
@@ -120,6 +262,7 @@ def testWithReply() {
 
   ebus = eb.send(address, sent, { reply ->
     tu.checkThread()
+    tu.azzert(null != reply.address)
     assertReply(reply.body())
     tu.testComplete()
   })
@@ -129,8 +272,10 @@ def testWithReply() {
 def testReplyOfReplyOfReply() {
 
   def ebus = eb.registerHandler(address, myHandler = { msg ->
+    tu.azzert(msg.address == address)
     tu.azzert("message" == msg.body())
     msg.reply("reply", { reply ->
+      tu.azzert(null != reply.address)
       tu.azzert("reply-of-reply" == reply.body())
       reply.reply("reply-of-reply-of-reply")
       tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
@@ -138,8 +283,10 @@ def testReplyOfReplyOfReply() {
   })
   tu.azzert(ebus == eb)
   ebus = eb.send(address, "message", { reply->
+    tu.azzert(null != reply.address)
     tu.azzert("reply" == reply.body())
     reply.reply("reply-of-reply", { replyReply ->
+      tu.azzert(null != replyReply.address)
       tu.azzert("reply-of-reply-of-reply" == replyReply.body())
       tu.testComplete()
     })
@@ -152,6 +299,7 @@ def testEmptyReply() {
   def handled = false
   def ebus = eb.registerHandler(address, myHandler = { msg ->
     tu.checkThread()
+    tu.azzert(msg.address == address)
     tu.azzert(!handled)
     assertSent(msg.body())
     tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
@@ -161,6 +309,7 @@ def testEmptyReply() {
   tu.azzert(ebus == eb)
 
   ebus = eb.send(address, sent, { reply ->
+    tu.azzert(null != reply.address)
     tu.checkThread()
     tu.testComplete()
   })
@@ -201,6 +350,7 @@ def testEchoNull() {
 def echo(msg) {
   def ebus = eb.registerHandler(address, myHandler = { received ->
     tu.checkThread()
+    tu.azzert(received.address == address)
     tu.azzert(eb.unregisterHandler(address, myHandler) == eb)
     received.reply(received.body())
   })

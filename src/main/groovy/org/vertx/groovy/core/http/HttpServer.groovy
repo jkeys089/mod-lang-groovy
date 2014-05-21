@@ -89,18 +89,30 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
    * is complete.
    */
   void close(Closure doneHandler)
-
+  
   /**
    * Set if the {@link HttpServer} should compress the http response if the connected client supports it.
    */
-  HttpServer setCompressionSupported(boolean compressionSupported);
+  HttpServer setCompressionSupported(boolean compressionSupported)
 
   /**
    * Returns {@code true} if the {@link HttpServer} should compress the http response if the connected client supports it.
    */
-  boolean isCompressionSupported();
+  boolean isCompressionSupported()
+
 
   /**
+   * Sets the maximum websocket frame size in bytes. Default is 65536 bytes.
+   * @param maxSize The size in bytes
+   */
+  HttpServer setMaxWebSocketFrameSize(int maxSize)
+
+  /**
+   * Get the  maximum websocket frame size in bytes.
+   */
+  int getMaxWebSocketFrameSize()
+
+   /**
    * Get the underlying Java server
    */
   org.vertx.java.core.http.HttpServer toJavaServer();

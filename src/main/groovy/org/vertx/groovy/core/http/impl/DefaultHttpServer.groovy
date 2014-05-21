@@ -32,7 +32,8 @@ import org.vertx.java.core.http.ServerWebSocket as JServerWebSocket
 @CompileStatic
 class DefaultHttpServer implements HttpServer {
 
-  private JHttpServer jServer
+  // Putting it as a final public groovy property to be able to use `HttpServer.jServer` notation
+  final JHttpServer jServer
 
   DefaultHttpServer(Vertx vertx, Map props = null) {
     jServer = vertx.createHttpServer()
@@ -86,6 +87,17 @@ class DefaultHttpServer implements HttpServer {
   @Override
   void close() {
     jServer.close()
+  }
+
+  @Override
+  HttpServer setMaxWebSocketFrameSize(int maxSize) {
+    jServer.setMaxWebSocketFrameSize( maxSize )
+    this
+  }
+ 
+  @Override
+  int getMaxWebSocketFrameSize() {
+    jServer.getMaxWebSocketFrameSize()
   }
 
   @Override
@@ -217,6 +229,13 @@ class DefaultHttpServer implements HttpServer {
     jServer.setUsePooledBuffers(pooledBuffers)
     this
   }
+  
+  @Override
+  HttpServer setCompressionSupported(boolean compressionSupported) {
+    jServer.setCompressionSupported(compressionSupported)
+    this
+  }
+  
 
   @Override
   boolean isTCPNoDelay() {
@@ -259,17 +278,17 @@ class DefaultHttpServer implements HttpServer {
   }
 
   @Override
-  HttpServer setCompressionSupported(boolean compressionSupported) {
-    jServer.setCompressionSupported(compressionSupported)
-    this
-  }
-
-  @Override
   boolean isCompressionSupported() {
-    return jServer.isCompressionSupported()
+    jServer.isCompressionSupported()
   }
 
-  org.vertx.java.core.http.HttpServer toJavaServer() {
+  /**
+   * Get the Java instance
+   *
+   * @deprecated use  `HttpServer.jServer` notation instead.  
+   */
+  @Deprecated 
+  JHttpServer toJavaServer() {
     jServer
   }
 }

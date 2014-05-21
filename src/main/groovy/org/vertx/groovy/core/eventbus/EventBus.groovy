@@ -22,6 +22,7 @@ import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.impl.ClosureUtil
 import org.vertx.java.core.Handler
 import org.vertx.java.core.eventbus.EventBus as JEventBus
+import org.vertx.java.core.json.JsonArray
 import org.vertx.java.core.json.JsonObject
 import org.vertx.java.core.eventbus.Message as JMessage
 
@@ -64,7 +65,8 @@ import java.util.concurrent.ConcurrentHashMap
 @CompileStatic
 class EventBus {
 
-  private final JEventBus jEventBus
+  // Putting it as a public final groovy property to be able to use `EventBus.jEventBus` notation
+  final JEventBus jEventBus
 
   public EventBus(JEventBus jEventBus) {
     this.jEventBus = jEventBus
@@ -97,7 +99,7 @@ class EventBus {
    * byte, short, int, long, float, double or {@link org.vertx.java.core.buffer.Buffer}
    * @param address The address to send it to
    * @param message The message
-   * @param timeout The response timeout in ms
+   * @param timeout The timeout
    * @param replyHandler Reply handler will be called when any reply from the recipient is received
    * @return self which allow method chaining
    */
@@ -121,7 +123,6 @@ class EventBus {
    */
   EventBus publish(String address, message) {
     if (message != null) {
-      message = convertMessage(message)
       jEventBus.publish(address, convertMessage(message))
     } else {
       // Just choose an overloaded method...
@@ -195,18 +196,47 @@ class EventBus {
     return jEventBus.getDefaultReplyTimeout()
   }
 
+  /**
+   * Get the Java instance
+   *
+   * @deprecated use  `EventBus.jEventBus` notation instead.
+   */
+  @Deprecated
   JEventBus javaEventBus() {
     jEventBus
   }
 
   protected static convertMessage(message) {
-    if (message instanceof Map<String,Object>) {
-      message = new JsonObject((Map<String,Object>)message)
+    if (message instanceof Map) {
+      message = new JsonObject(normalizeMap(message))
+    } else if (message instanceof List) {
+        message = new JsonArray(normalizeList(message))
+    } else if (message instanceof GString) {
+        message = message.toString()
     } else if (message instanceof Buffer) {
       message = ((Buffer)message).toJavaBuffer()
     }
     message
   }
+
+  private static Map normalizeMap(Map map) {
+      map.collectEntries{k, v -> [normalize(k), normalize(v)]};
+  }
+  private static List normalizeList(List list) {
+      list.collect{v -> normalize(v)};
+  }
+  private static Object normalize(Object o) {
+    if (o instanceof Map) {
+        normalizeMap(o);
+    } else if (o instanceof List) {
+        normalizeList(o);
+    } else if (o instanceof GString) {
+        o.toString();
+    } else {
+        o;
+    }
+  }
+
 
   protected static Handler wrapHandler(Closure handler) {
     if (handler != null) {
@@ -234,4 +264,5 @@ class EventBus {
       return null
     }
   }
+
 }

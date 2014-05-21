@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.vertx.java.tests.core.eventbus;
+package org.vertx.java.tests.core.datagram;
 
 import org.vertx.java.testframework.TestBase;
 
 /**
- * @author <a href="http://tfox.org">Tim Fox</a>
+ * @author <a href="mailto:nmaurer@redhat.com">Norman Maurer</a>
  */
-public class GroovyEventBusTest extends TestBase {
+public class GroovyDatagramTest extends TestBase {
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    startApp("core/eventbus/testClient.groovy");
+    startApp("core/datagram/testClient.groovy");
   }
 
   @Override
@@ -34,92 +33,68 @@ public class GroovyEventBusTest extends TestBase {
     super.tearDown();
   }
 
-  public void testSimple() {
+  public void testSendReceive() {
     startTest(getMethodName());
   }
 
-  public void testSendList() {
+  public void testListenHostPort() {
     startTest(getMethodName());
   }
 
-  public void testSendGString() {
-      startTest(getMethodName());
-  }
-
-  public void testSimpleWithTimeout() {
+  public void testListenPort() {
     startTest(getMethodName());
   }
 
-  public void testMissingHandler() {
+  public void testListenInetSocketAddress() {
     startTest(getMethodName());
   }
 
-  public void testDoesTimeout() {
+  public void testListenSamePortMultipleTimes() {
     startTest(getMethodName());
   }
 
-  public void testDoesNotTimeout() {
+
+  public void testEcho() {
+     startTest(getMethodName());
+  }
+
+  public void testSendAfterCloseFails() {
     startTest(getMethodName());
   }
 
-  public void testHasReplyAddress() {
+  public void testBroadcast() {
     startTest(getMethodName());
   }
 
-  public void testNoReplyAddress() {
+  public void testBroadcastFailsIfNotConfigured() {
     startTest(getMethodName());
   }
 
-  public void testSetDefaultBusTimeout() {
+  public void testConfigureAfterSendString() {
     startTest(getMethodName());
   }
 
-  public void testUnregister() {
+  public void testConfigureAfterSendStringWithEnc() {
     startTest(getMethodName());
   }
 
-  public void testWithReply() {
+  public void testConfigureAfterSendBuffer() {
     startTest(getMethodName());
   }
 
-  public void testEmptyReply() {
+  public void testConfigureAfterListen() {
     startTest(getMethodName());
   }
 
-  public void testEmptyMessage() {
+  public void testConfigureAfterListenWithInetSocketAddress() {
     startTest(getMethodName());
   }
 
-  public void testEchoString() {
+  public void testConfigure() {
     startTest(getMethodName());
   }
 
-  public void testEchoNumber1() {
+  public void testMulticastJoinLeave() {
     startTest(getMethodName());
   }
-
-  public void testEchoNumber2() {
-    startTest(getMethodName());
-  }
-
-  public void testEchoBooleanTrue() {
-    startTest(getMethodName());
-  }
-
-  public void testEchoBooleanFalse() {
-    startTest(getMethodName());
-  }
-
-  public void testEchoJson() {
-    startTest(getMethodName());
-  }
-
-  public void testEchoNull() {
-    startTest(getMethodName());
-  }
-
-  public void testReplyOfReplyOfReply() {
-    startTest(getMethodName());
-  }
-
 }
