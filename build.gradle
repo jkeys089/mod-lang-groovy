@@ -56,8 +56,10 @@ repositories {
 dependencies {
   compile "org.codehaus.groovy:groovy-all:$groovyVersion"
 
-  provided "io.vertx:vertx-core:$vertxVersion"
-  provided "io.vertx:vertx-platform:$vertxVersion"
+  compile files('/Users/jon/Desktop/vert.x-2.1.1/lib/vertx-platform-2.1.1.jar')
+  compile files('/Users/jon/Desktop/vert.x-2.1.1/lib/vertx-core-2.1.1.jar')
+  //provided "io.vertx:vertx-core:$vertxVersion"
+  //provided "io.vertx:vertx-platform:$vertxVersion"
   provided "io.vertx:testtools:$toolsVersion"
 
   provided( "io.vertx:vertx-testframework:$testFrameworkVersion" ) {

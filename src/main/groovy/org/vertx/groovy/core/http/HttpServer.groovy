@@ -91,6 +91,17 @@ interface HttpServer extends ServerSSLSupport<HttpServer>, ServerTCPSupport<Http
   void close(Closure doneHandler)
 
   /**
+   * Set the amount of seconds required to close an idle connection.
+   * A value of 0 means that idle connections are not closed
+   */
+  HttpServer setIdleTimeout(int idleTimeout);
+
+  /**
+   * Returns the amount of seconds required to close an idle connection (0 means no closing idle connections)
+   */
+  int getIdleTimeout();
+
+  /**
    * Set if the {@link HttpServer} should compress the http response if the connected client supports it.
    */
   HttpServer setCompressionSupported(boolean compressionSupported)

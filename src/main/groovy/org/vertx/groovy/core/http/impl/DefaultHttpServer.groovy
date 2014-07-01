@@ -26,6 +26,8 @@ import org.vertx.java.core.http.HttpServer as JHttpServer
 import org.vertx.java.core.http.HttpServerRequest as JHttpServerRequest
 import org.vertx.java.core.http.ServerWebSocket as JServerWebSocket
 
+import javax.net.ssl.SSLContext
+
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
  */
@@ -125,6 +127,12 @@ class DefaultHttpServer implements HttpServer {
   @Override
   boolean isSSL() {
     jServer.isSSL()
+  }
+
+  @Override
+  HttpServer setSSLContext(SSLContext sslContext) {
+    jServer.setSSLContext(sslContext)
+    this
   }
 
   @Override
@@ -231,6 +239,12 @@ class DefaultHttpServer implements HttpServer {
   }
 
   @Override
+  HttpServer setIdleTimeout(int idleTimeout) {
+    jServer.setIdleTimeout(idleTimeout)
+    this
+  }
+
+  @Override
   HttpServer setCompressionSupported(boolean compressionSupported) {
     jServer.setCompressionSupported(compressionSupported)
     this
@@ -275,6 +289,11 @@ class DefaultHttpServer implements HttpServer {
   @Override
   int getTrafficClass() {
     jServer.getTrafficClass()
+  }
+
+  @Override
+  int getIdleTimeout() {
+    jServer.getIdleTimeout()
   }
 
   @Override
